@@ -116,9 +116,9 @@ namespace gsl {
     
     //TODO: SFINAE on container data type, iterable
     template<typename Container>
-    const Histogram histogram_from_raw_data(const Container& data)
+    const Histogram histogram_from_raw_data(const Container& data, std::size_t nbins)
     {
-        Histogram out(data.size());
+        Histogram out(nbins,*std::min_element(data.begin(),data.end()),*std::max_element(data.begin(),data.end()));
         
         for(const auto& d : data)
         {
@@ -128,24 +128,24 @@ namespace gsl {
         return out;
     };
     
-    template<typename DataContainer, typename WeightContainer>
-    const Histogram histogram_from_raw_data(const DataContainer& data, const WeightContainer& weights)
-    {
-        if(data.size() != weights.size())
-        {
-            //TODO: throw exception
-        }
-        
-        Histogram out(data.size());
-        
-        auto wit = weights.begin();
-        for(auto dit = data.begin(); dit != data.end(); dit++)
-        {
-            out.accumulate(*dit, *(wit++));
-        }
-        
-        return out;
-    };
+//     template<typename DataContainer, typename WeightContainer>
+//     const Histogram histogram_from_raw_data(const DataContainer& data, const WeightContainer& weights)
+//     {
+//         if(data.size() != weights.size())
+//         {
+//             //TODO: throw exception
+//         }
+//         
+//         Histogram out(data.size());
+//         
+//         auto wit = weights.begin();
+//         for(auto dit = data.begin(); dit != data.end(); dit++)
+//         {
+//             out.accumulate(*dit, *(wit++));
+//         }
+//         
+//         return out;
+//     };
     
     
     template<typename Iterator>

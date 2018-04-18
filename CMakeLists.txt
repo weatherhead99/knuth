@@ -10,3 +10,6 @@ target_link_libraries(knuth PUBLIC ${GSL_LIBRARIES})
 
 add_executable(hist_iterator_dev hist_iterator_dev.cpp)
 target_link_libraries(hist_iterator_dev PRIVATE knuth)
+
+add_executable(optbins_examples optbins_examples.cpp)
+target_link_libraries(optbins_examples PRIVATE knuth)

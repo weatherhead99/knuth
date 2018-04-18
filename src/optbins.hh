@@ -6,4 +6,7 @@ namespace knuth {
     double optbins_logp(const gsl::Histogram& hist);
     
     
+    
+    
+    
 }
