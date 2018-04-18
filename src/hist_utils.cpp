@@ -21,3 +21,6 @@ gsl::Histogram knuth::collapse_histogram(const gsl::Histogram& in, int N)
     
     
 }
+
+
+

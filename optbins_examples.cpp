@@ -37,14 +37,11 @@ int main(int , char** )
     //optbins brute force
     auto logpit = logp.begin();
     
-    auto minsamp = *std::min_element(samples.begin(),samples.end());
-    auto maxsamp = *std::max_element(samples.begin(), samples.end());
     
     for(int i=1; i < nsamp; i++)
     {
-        gsl::Histogram hist = gsl::histogram_from_raw_data(samples, i);
         
-        *logpit = knuth::optbins_logp(hist);
+        *logpit = knuth::optbins_logp(samples.begin(),samples.end(), i);
         
         std::cout << i << "," << *logpit << endl;
         

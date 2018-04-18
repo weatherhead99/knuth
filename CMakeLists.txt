@@ -4,7 +4,7 @@ set(CMAKE_CXX_STANDARD 11)
 
 find_package(GSL REQUIRED)
 
-add_library(knuth src/gsl_wrap.cpp src/optbins.cpp src/hist_utils.cpp)
+add_library(knuth src/gsl_wrap.cpp src/optbins.cpp src/hist_utils.cpp src/nested_sampling.cpp)
 target_include_directories(knuth PUBLIC src)
 target_link_libraries(knuth PUBLIC ${GSL_LIBRARIES})
 

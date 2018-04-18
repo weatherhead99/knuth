@@ -3,6 +3,8 @@
 #include <cmath>
 #include <algorithm>
 #include <iostream>
+#include <random>
+
 
 using std::cout;
 using std::endl;
@@ -32,3 +34,52 @@ double knuth::optbins_logp(const gsl::Histogram& hist)
     
     return p1 + p2;
 }
+
+
+std::tuple<gsl::Histogram, double> knuth::optbins_nested_sampling(int niterations, int npoints, const std::vector<double>& data)
+{
+    std::default_random_engine generator;
+    
+    
+    double Z = 0.0;
+    
+    auto maxpoints = data.size();
+    std::uniform_int_distribution<int> distribution(1,maxpoints);
+    
+    double maxval = *std::max_element(data.begin(),data.end());
+    double minval = *std::min_element(data.begin(), data.end());
+    
+    //sample points from the prior
+    std::vector<double> sample_points(npoints);
+    std::vector<int> sample_N(npoints);
+    auto nit = sample_N.begin();
+    
+    for(auto& v : sample_points)
+    {
+        *nit = distribution(generator);
+        
+        gsl::Histogram hist(*nit,minval,maxval);
+        v = optbins_logp(hist);
+        ++nit;
+    };
+    
+    double X = 1.;
+    
+    for (int i=1; i <= niterations; ++i)
+    {
+      double L = *std::min_element(sample_points.begin(), sample_points.end());  
+      double nextX = std::exp(- i / npoints);
+      double w = X - nextX;
+      X = nextX;
+      
+      
+    };
+    
+    
+    
+    
+    
+}
+
+
+
