@@ -3,6 +3,7 @@
 #include <cstddef>
 #include <gsl/gsl_histogram.h>
 #include <algorithm>
+#include <tuple>
 
 
 namespace gsl {
@@ -13,7 +14,6 @@ namespace gsl {
         Histogram(std::size_t n);
         ~Histogram();
         
-        
         //copy constructor
         Histogram(const Histogram& other);
         Histogram& operator=(const Histogram& other);
@@ -21,6 +21,12 @@ namespace gsl {
         //move constructor
         Histogram(Histogram&& other);
         Histogram& operator=(Histogram&& other);
+        
+        //number of bins
+        std::size_t nbins() const;
+        
+        //number of samples
+        unsigned long nsamp() const;
         
         //access element
         double operator[](std::size_t i) const;
@@ -68,7 +74,25 @@ namespace gsl {
         Histogram& operator-= (double x);
         const Histogram operator- (double x);
         
+        
+        //iterators
+        class iterator{
+        public:
+            
+        private:
+            iterator(const Histogram& hist);
+            int i_;
+        };
+        
+        Histogram::iterator& begin();
+        Histogram::iterator& end();
+        
+        const Histogram::iterator& cbegin();
+        const Histogram::iterator& cend();
+        
+        
     private:
+        unsigned long nsamp_ = 0;
         gsl_histogram* hist_;
         
     };
@@ -119,6 +143,9 @@ namespace gsl {
         
         return out;
     }
+    
+    
+    std::tuple<double,double> lngamma(double x);
     
     
     

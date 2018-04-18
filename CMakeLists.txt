@@ -4,5 +4,5 @@ set(CMAKE_CXX_STANDARD 11)
 
 find_package(GSL REQUIRED)
 
-add_library(knuth src/gsl_wrap.cpp)
+add_library(knuth src/gsl_wrap.cpp src/optbins.cpp)
 target_include_directories(knuth PRIVATE src)

@@ -1,5 +1,5 @@
 #include <gsl_wrap.hh>
-
+#include <gsl/gsl_specfunc.h>
 
 gsl::Histogram::Histogram(std::size_t n)
 {
@@ -15,11 +15,13 @@ gsl::Histogram::~Histogram()
 gsl::Histogram::Histogram(const gsl::Histogram& other)
 {
     hist_ = gsl_histogram_clone(other.hist_);
+    nsamp_ = other.nsamp_;
 }
 
 gsl::Histogram & gsl::Histogram::operator=(const gsl::Histogram& other)
 {
     hist_ = gsl_histogram_clone(other.hist_);
+    nsamp_ = other.nsamp_;
     return *this;
 }
 
@@ -27,13 +29,27 @@ gsl::Histogram & gsl::Histogram::operator=(const gsl::Histogram& other)
 gsl::Histogram::Histogram(gsl::Histogram && other)
 {
     hist_ = other.hist_;
+    std::swap(nsamp_, other.nsamp_);
 }
 
 gsl::Histogram & gsl::Histogram::operator=(gsl::Histogram && other)
 {
     hist_ = other.hist_;
+    std::swap(nsamp_, other.nsamp_);
     return *this;
 }
+
+std::size_t gsl::Histogram::nbins() const
+{
+    return gsl_histogram_bins(hist_);
+}
+
+unsigned long gsl::Histogram::nsamp() const
+{
+    return nsamp_;
+}
+
+
 
 double gsl::Histogram::operator[](std::size_t i) const
 {
@@ -51,12 +67,14 @@ double gsl::Histogram::operator[](std::size_t i) const
 void gsl::Histogram::accumulate(double x)
 {
     int err = gsl_histogram_increment(hist_, x);
+    ++nsamp_;
     //TODO error handling
 }
 
 void gsl::Histogram::accumulate(double x, int n)
 {
     int err = gsl_histogram_accumulate(hist_, x, n);
+    nsamp_ += n;
     //TODO error handling
 }
 
@@ -227,6 +245,18 @@ const gsl::Histogram gsl::Histogram::operator-(double x)
 }
 
 
+std::tuple<double, double> gsl::lngamma(double x)
+{
+    gsl_sf_result res;
+    
+    int err = gsl_sf_gamma_e(x, &res);
+    
+    //TODO: error handling!
+    
+    
+    return std::make_tuple(res.val, res.err);
+    
+}
 
 
 
