@@ -4,6 +4,7 @@
 #include <gsl/gsl_histogram.h>
 #include <algorithm>
 #include <tuple>
+#include <vector>
 
 
 namespace gsl {
@@ -11,7 +12,8 @@ namespace gsl {
     
     class Histogram{
     public:
-        Histogram(std::size_t n);
+        Histogram(std::size_t n, double min, double max);
+        Histogram(std::size_t n, const std::vector<double>& bins);
         ~Histogram();
         
         //copy constructor
@@ -25,11 +27,10 @@ namespace gsl {
         //number of bins
         std::size_t nbins() const;
         
-        //number of samples
-        unsigned long nsamp() const;
-        
         //access element
         double operator[](std::size_t i) const;
+        std::tuple<double,double> binrange(std::size_t i) const;
+        
         
         //add values
         void accumulate(double x);
@@ -77,23 +78,39 @@ namespace gsl {
         
         //iterators
         class iterator{
+            friend class Histogram;
         public:
+            ~iterator() = default;
+            iterator(const iterator& other);
+            iterator& operator=(const iterator& other);
+            double operator*();
+            iterator() = default;
+            
+            std::tuple<double,double> bin();
+            
+            iterator& operator++();
+            iterator operator++(int);
+            
+            bool operator==(const iterator& other);
+            bool operator!=(const iterator& other);
+            
             
         private:
-            iterator(const Histogram& hist);
-            int i_;
+            explicit iterator(const Histogram& hist, int begin=0);
+            int i_ = 0;
+            const Histogram* hist_ = nullptr;
         };
         
-        Histogram::iterator& begin();
-        Histogram::iterator& end();
+        Histogram::iterator begin() const;
+        Histogram::iterator end() const;
         
         const Histogram::iterator& cbegin();
         const Histogram::iterator& cend();
         
         
+        
     private:
-        unsigned long nsamp_ = 0;
-        gsl_histogram* hist_;
+        gsl_histogram* hist_ = nullptr;
         
     };
     

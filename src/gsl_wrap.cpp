@@ -1,10 +1,21 @@
 #include <gsl_wrap.hh>
 #include <gsl/gsl_specfunc.h>
 
-gsl::Histogram::Histogram(std::size_t n)
+gsl::Histogram::Histogram(std::size_t n, double min, double max)
 {
     hist_ = gsl_histogram_alloc(n);
+    
+    int err = gsl_histogram_set_ranges_uniform(hist_,min,max);
+    //TODO: error handling
+    
 }
+
+gsl::Histogram::Histogram(std::size_t n, const std::vector<double>& bins)
+{
+    hist_ = gsl_histogram_alloc(n);
+    int err = gsl_histogram_set_ranges(hist_,bins.data(), bins.size());
+}
+
 
 gsl::Histogram::~Histogram()
 {
@@ -15,13 +26,12 @@ gsl::Histogram::~Histogram()
 gsl::Histogram::Histogram(const gsl::Histogram& other)
 {
     hist_ = gsl_histogram_clone(other.hist_);
-    nsamp_ = other.nsamp_;
 }
 
 gsl::Histogram & gsl::Histogram::operator=(const gsl::Histogram& other)
 {
+    //TODO: need to free existing histogram if it exists
     hist_ = gsl_histogram_clone(other.hist_);
-    nsamp_ = other.nsamp_;
     return *this;
 }
 
@@ -29,13 +39,11 @@ gsl::Histogram & gsl::Histogram::operator=(const gsl::Histogram& other)
 gsl::Histogram::Histogram(gsl::Histogram && other)
 {
     hist_ = other.hist_;
-    std::swap(nsamp_, other.nsamp_);
 }
 
 gsl::Histogram & gsl::Histogram::operator=(gsl::Histogram && other)
 {
     hist_ = other.hist_;
-    std::swap(nsamp_, other.nsamp_);
     return *this;
 }
 
@@ -43,12 +51,6 @@ std::size_t gsl::Histogram::nbins() const
 {
     return gsl_histogram_bins(hist_);
 }
-
-unsigned long gsl::Histogram::nsamp() const
-{
-    return nsamp_;
-}
-
 
 
 double gsl::Histogram::operator[](std::size_t i) const
@@ -64,17 +66,30 @@ double gsl::Histogram::operator[](std::size_t i) const
     
 }
 
+std::tuple<double, double> gsl::Histogram::binrange(std::size_t i) const
+{
+    std::tuple<double,double> out{0.,0.};
+    
+    int err = gsl_histogram_get_range(hist_,i,&std::get<0>(out), &std::get<1>(out));
+    
+    //TODO: error handling!
+    
+    return out;
+    
+}
+
+
+
+
 void gsl::Histogram::accumulate(double x)
 {
     int err = gsl_histogram_increment(hist_, x);
-    ++nsamp_;
     //TODO error handling
 }
 
 void gsl::Histogram::accumulate(double x, int n)
 {
     int err = gsl_histogram_accumulate(hist_, x, n);
-    nsamp_ += n;
     //TODO error handling
 }
 
@@ -243,6 +258,81 @@ const gsl::Histogram gsl::Histogram::operator-(double x)
     out -= x;
     return out;
 }
+
+
+gsl::Histogram::iterator::iterator(const gsl::Histogram& hist, int begin)
+: hist_(&hist), i_(begin)
+{
+}
+
+
+gsl::Histogram::iterator & gsl::Histogram::iterator::operator=(const gsl::Histogram::iterator& other)
+{
+    hist_ = other.hist_;
+    i_ = other.i_;
+    
+    return *this;
+}
+
+gsl::Histogram::iterator::iterator(const gsl::Histogram::iterator& other)
+{
+    hist_ = other.hist_;
+    i_ = other.i_;
+}
+
+double gsl::Histogram::iterator::operator*()
+{    
+    return hist_->operator[](i_);
+}
+
+std::tuple<double, double> gsl::Histogram::iterator::bin()
+{
+    return hist_->binrange(i_);
+    
+}
+
+
+gsl::Histogram::iterator& gsl::Histogram::iterator::operator++()
+{
+    ++i_;
+    if(i_ == (hist_->nbins() ))
+        i_ = -1;
+    return *this;
+}
+
+gsl::Histogram::iterator gsl::Histogram::iterator::operator++(int)
+{
+    auto tmp = *this;
+    ++i_;
+    if(i_ == (hist_->nbins() ) )
+        i_ = -1;
+    
+    return tmp;
+}
+
+bool gsl::Histogram::iterator::operator==(const gsl::Histogram::iterator& other)
+{
+    return i_ == other.i_;
+}
+
+bool gsl::Histogram::iterator::operator!=(const gsl::Histogram::iterator& other)
+{
+    return !(*this == other);
+}
+
+
+gsl::Histogram::iterator gsl::Histogram::begin() const
+{
+    return iterator(*this);
+}
+
+gsl::Histogram::iterator gsl::Histogram::end() const
+{
+    return iterator(*this,-1);
+}
+
+
+
 
 
 std::tuple<double, double> gsl::lngamma(double x)
