@@ -73,6 +73,53 @@ namespace gsl {
         
     };
     
+    //TODO: SFINAE on container data type, iterable
+    template<typename Container>
+    const Histogram histogram_from_raw_data(const Container& data)
+    {
+        Histogram out(data.size());
+        
+        for(const auto& d : data)
+        {
+            out.accumulate(d);
+        }
+        
+        return out;
+    };
+    
+    template<typename DataContainer, typename WeightContainer>
+    const Histogram histogram_from_raw_data(const DataContainer& data, const WeightContainer& weights)
+    {
+        if(data.size() != weights.size())
+        {
+            //TODO: throw exception
+        }
+        
+        Histogram out(data.size());
+        
+        auto wit = weights.begin();
+        for(auto dit = data.begin(); dit != data.end(); dit++)
+        {
+            out.accumulate(*dit, *(wit++));
+        }
+        
+        return out;
+    };
+    
+    
+    template<typename Iterator>
+    const Histogram histogram_from_raw_data(const Iterator& begin, const Iterator& end)
+    {
+        Histogram out(std::distance(begin, end));
+        
+        for(auto it = begin; it != end; it++)
+        {
+            out.accumulate(*it);
+        }
+        
+        return out;
+    }
+    
     
     
 }
