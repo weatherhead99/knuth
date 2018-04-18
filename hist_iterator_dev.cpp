@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include <gsl_wrap.hh>
+#include <optbins.hh>
 
 using std::cout;
 using std::endl;
@@ -25,6 +26,8 @@ int main(int, char**)
         std::cout << std::get<0>(binrange) << " - " << std::get<1>(binrange) << " : " << *it << std::endl;
         
     };
+    
+    std::cout << "logp: " << knuth::optbins_logp(hist) << std::endl;
     
     
 };
