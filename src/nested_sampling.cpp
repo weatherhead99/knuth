@@ -3,31 +3,6 @@
 #include <algorithm>
 #include <optbins.hh>
 
-// knuth::optmap::iterator knuth::find_worst(optmap& map)
-// {
-//     auto it = std::min_element(map.begin(), map.end(),
-//                                [] (const optmap::value_type& a, const optmap::value_type& b)
-//                                {
-//                                    return a.second.logP < b.second.logP;
-//                                });
-//     return it;
-//     
-// }
-// 
-// knuth::optvec::iterator knuth::find_worst(optvec& vec)
-// {
-//     auto it = std::min_element(vec.begin(), vec.end(),
-//                                [] (const optvec::value_type& a, const optvec::value_type& b)
-//                                {
-//                                    return a->second.logP < b->second.logP;
-//                                });
-//     return it;
-//     
-// }
-// 
-
-
-
 
 knuth::NestedSamplingOptbins::NestedSamplingOptbins(const std::vector<double>& data, int step_size, int npoints, std::size_t history_limit)
 :  data_(data), step_size_(step_size), history_limit_(history_limit)
