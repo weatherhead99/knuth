@@ -51,7 +51,7 @@ knuth::optmap::iterator knuth::NestedSamplingOptbins::MCMCMove(optmap::iterator&
         
         //TODO: calculate logW if calculating mean
         
-        auto res = stored_calcs.insert(std::make_pair(testm,pt));
+        auto res = stored_calcs.emplace(testm,pt);
         //TODO: check value of returned bool
         
         loc = res.first;
