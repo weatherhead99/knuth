@@ -14,7 +14,7 @@ namespace knuth{
             double logWt = 0.0;
     };
     
-    using optmap = std::map<std::size_t, optpoint>;
+    using optmap = std::map<int, optpoint>;
     
     optmap::iterator find_worst(optmap& map);
     

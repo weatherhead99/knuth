@@ -40,7 +40,7 @@ knuth::optmap::iterator knuth::NestedSamplingOptbins::MCMCMove(optmap::iterator&
     
     //check if we have this result already
     //TODO: limit previously stored results
-    double thislogP;
+    
     auto loc = stored_calcs.find(testm);
     if(loc == stored_calcs.end())
     {
@@ -59,7 +59,7 @@ knuth::optmap::iterator knuth::NestedSamplingOptbins::MCMCMove(optmap::iterator&
     }
     
     
-    if(thislogP > logP_constraint)
+    if(loc->second.logP > logP_constraint)
     {
         ++MCMC_accepted_;
     }
@@ -76,17 +76,25 @@ knuth::optmap::iterator knuth::NestedSamplingOptbins::MCMCMove(optmap::iterator&
 
 void knuth::NestedSamplingOptbins::MCMCRefineStepSize()
 {
+    bool changed = false;
+    
+    
     if(MCMC_accepted_ > MCMC_rejected_)
     {
         step_size_ *= std::ceil(std::exp(1. / MCMC_accepted_));
+        changed = true;
     }
     
     if(MCMC_rejected_ > MCMC_accepted_)
     {
         step_size_ /= std::ceil(std::exp(1./MCMC_rejected_));
-        
+        changed = true;
     }
     
+    if(changed)
+    {
+        binomial_dist_ = std::binomial_distribution<int>(step_size_,0.5);
+    }
 }
 
 
