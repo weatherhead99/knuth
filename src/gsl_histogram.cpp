@@ -1,4 +1,4 @@
-#include <gsl_wrap.hh>
+#include <gsl_histogram.hh>
 #include <gsl/gsl_specfunc.h>
 
 gsl::Histogram::Histogram(std::size_t n, double min, double max)

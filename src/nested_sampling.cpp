@@ -15,8 +15,8 @@ knuth::optmap::iterator knuth::find_worst(optmap& map)
 }
 
 
-knuth::NestedSamplingOptbins::NestedSamplingOptbins(const std::vector<double>& data, int step_size)
-: data_(data), step_size_(step_size)
+knuth::NestedSamplingOptbins::NestedSamplingOptbins(const std::vector<double>& data, int step_size, std::size_t history_limit)
+: data_(data), step_size_(step_size), history_limit_(history_limit)
 {
     binomial_dist_ = std::binomial_distribution<int>(step_size,0.5);
     data_min_ = *std::min_element(data.begin(), data.end());
@@ -69,7 +69,6 @@ knuth::optmap::iterator knuth::NestedSamplingOptbins::MCMCMove(optmap::iterator&
         loc = stored_calcs.end();
     }
     
-    MCMCRefineStepSize();
     return loc;
     
 }
@@ -97,4 +96,12 @@ void knuth::NestedSamplingOptbins::MCMCRefineStepSize()
     }
 }
 
+void knuth::NestedSamplingOptbins::trim_stored_calcs()
+{
+    while(stored_calcs.size() > history_limit_)
+    {
+        stored_calcs.erase(find_worst(stored_calcs));
+    };
+    
+}
 

@@ -1,5 +1,5 @@
 #pragma once
-#include <gsl_wrap.hh>
+#include <gsl_histogram.hh>
 #include <tuple>
 
 

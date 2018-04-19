@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include <gsl_wrap.hh>
+#include <gsl_histogram.hh>
 #include <optbins.hh>
 
 using std::cout;

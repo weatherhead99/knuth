@@ -21,10 +21,11 @@ namespace knuth{
     class NestedSamplingOptbins
     {
     public:
-        NestedSamplingOptbins(const std::vector<double> & data, int step_size);
+        NestedSamplingOptbins(const std::vector<double> & data, int step_size, std::size_t history_limit);
         
         optmap::iterator MCMCMove(optmap::iterator& point);
         void MCMCRefineStepSize();
+        void trim_stored_calcs();
         
     private:
         //TODO: allow this to be supplied
@@ -39,6 +40,7 @@ namespace knuth{
         int MCMC_accepted_ = 0;
         int MCMC_rejected_ = 0;
         int step_size_;
+        std::size_t history_limit_;
         
         
     };
