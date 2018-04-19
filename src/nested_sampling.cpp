@@ -3,35 +3,52 @@
 #include <algorithm>
 #include <optbins.hh>
 
-knuth::optmap::iterator knuth::find_worst(optmap& map)
-{
-    auto it = std::min_element(map.begin(), map.end(),
-                               [] (const optmap::value_type& a, const optmap::value_type& b)
-                               {
-                                   return a.second.logP < b.second.logP;
-                               });
-    return it;
-    
-}
+// knuth::optmap::iterator knuth::find_worst(optmap& map)
+// {
+//     auto it = std::min_element(map.begin(), map.end(),
+//                                [] (const optmap::value_type& a, const optmap::value_type& b)
+//                                {
+//                                    return a.second.logP < b.second.logP;
+//                                });
+//     return it;
+//     
+// }
+// 
+// knuth::optvec::iterator knuth::find_worst(optvec& vec)
+// {
+//     auto it = std::min_element(vec.begin(), vec.end(),
+//                                [] (const optvec::value_type& a, const optvec::value_type& b)
+//                                {
+//                                    return a->second.logP < b->second.logP;
+//                                });
+//     return it;
+//     
+// }
+// 
 
 
-knuth::NestedSamplingOptbins::NestedSamplingOptbins(const std::vector<double>& data, int step_size, std::size_t history_limit)
-: data_(data), step_size_(step_size), history_limit_(history_limit)
+
+
+knuth::NestedSamplingOptbins::NestedSamplingOptbins(const std::vector<double>& data, int step_size, int npoints, std::size_t history_limit)
+:  data_(data), step_size_(step_size), history_limit_(history_limit)
 {
     binomial_dist_ = std::binomial_distribution<int>(step_size,0.5);
     data_min_ = *std::min_element(data.begin(), data.end());
     data_max_ = *std::max_element(data.begin(), data.end());
+    
+    selected_points.resize(npoints);
+    
 }
 
-knuth::optmap::iterator knuth::NestedSamplingOptbins::MCMCMove(optmap::iterator& point)
+knuth::optmap::iterator knuth::NestedSamplingOptbins::MCMCMove(optvec::iterator& point)
 {
     
-    int testm = point->first + binomial_dist_(generator_);
+    int testm = (*point)->first + binomial_dist_(generator_);
     
     //keep guessing if it's negative
     while(testm < 0)
     {
-        testm = point->first + binomial_dist_(generator_);
+        testm = (*point)->first + binomial_dist_(generator_);
     }
     
     //NOTE: data.size() this should be maxbins (might be the same or different)
@@ -54,8 +71,7 @@ knuth::optmap::iterator knuth::NestedSamplingOptbins::MCMCMove(optmap::iterator&
         auto res = stored_calcs.emplace(testm,pt);
         //TODO: check value of returned bool
         
-        loc = res.first;
-        
+        loc = res.first;   
     }
     
     
@@ -102,6 +118,61 @@ void knuth::NestedSamplingOptbins::trim_stored_calcs()
     {
         stored_calcs.erase(find_worst(stored_calcs));
     };
+    
+}
+
+void knuth::NestedSamplingOptbins::init_samples_uniform()
+{
+    //TODO: data size should be configurable?
+    std::uniform_int_distribution<int> dist(1,data_.size());
+    
+    for(std::size_t i = 0; i < selected_points.size(); i++)
+    {
+        auto bins = dist(generator_);
+        while( stored_calcs.find(bins) == stored_calcs.end())
+        {
+            bins = dist(generator_);
+        }
+        
+        optpoint pt;
+        gsl::Histogram h(bins, data_min_, data_max_);
+        
+        pt.logP = knuth::optbins_logp(h);
+        
+        auto newpt = stored_calcs.emplace(bins,pt);
+        selected_points[i] = newpt.first;
+        
+        logP_constraint = find_worst(stored_calcs)->second.logP;
+        
+    };
+    
+    
+}
+
+
+void knuth::NestedSamplingOptbins::iterate(int n_MCMC_trials)
+{
+    auto worst = find_worst(selected_points);
+    
+    //choose another random point that isn't the worst one...
+    auto pt = select_random(selected_points,generator_, worst);
+    
+    //kill the worst in favour of another entry
+    *worst = *pt;
+    
+    //MCMC 
+    for(int i= 0; i < n_MCMC_trials; ++i)
+    {
+        auto newpt = MCMCMove(pt);
+        if(newpt != stored_calcs.end())
+        {
+            *pt = newpt;
+        }
+        
+        MCMCRefineStepSize();
+    };
+    
+    trim_stored_calcs();
     
 }
 
