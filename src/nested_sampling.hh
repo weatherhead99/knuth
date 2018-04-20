@@ -24,7 +24,7 @@ namespace knuth{
 
 
     template<typename T>
-    typename T::iterator select_random(T& container, std::default_random_engine& generator, typename T::iterator& worst);
+    typename T::iterator select_random(T& container, std::default_random_engine& generator, typename T::iterator const& worst);
 
     template<typename T>
     typename T::iterator find_worst(T& container);
@@ -45,10 +45,13 @@ namespace knuth{
         
         void iterate(int n_MCMC_trials);
         
+        std::vector<std::pair<int,double>> get_current_points() const;
+        
     private:
         //TODO: allow this to be supplied
         std::default_random_engine generator_;
         std::binomial_distribution<int> binomial_dist_;
+        std::uniform_int_distribution<int> plus_minus_dist_;
         const std::vector<double>& data_;
         optmap stored_calcs;
         optvec selected_points;
@@ -65,7 +68,7 @@ namespace knuth{
     };
 
         template<typename T>
-    typename T::iterator select_random(T& container, std::default_random_engine& generator, typename T::iterator& worst)
+    typename T::iterator select_random(T& container, std::default_random_engine& generator, typename T::iterator const& worst)
     {
         std::uniform_int_distribution<int> dist(0, std::distance(container.begin(), container.end()) -1);
     

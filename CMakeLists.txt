@@ -13,3 +13,6 @@ target_link_libraries(hist_iterator_dev PRIVATE knuth)
 
 add_executable(optbins_examples optbins_examples.cpp)
 target_link_libraries(optbins_examples PRIVATE knuth)
+
+add_executable(nested_sampling_play nested_sampling_play.cpp)
+target_link_libraries(nested_sampling_play PRIVATE knuth)

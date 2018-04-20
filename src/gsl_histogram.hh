@@ -35,6 +35,17 @@ namespace gsl {
         //add values
         void accumulate(double x);
         void accumulate(double x, int n);
+        
+        template<typename iterator>
+        void accumulate(const iterator& begin, const iterator& end)
+        {
+            for(auto it = begin; it != end; it++)
+            {
+              accumulate(*it);  
+                
+            };
+        }
+        
 
         //find bin for value
         std::size_t find(double x) const;

@@ -30,8 +30,7 @@ double knuth::optbins_logp(const gsl::Histogram& hist)
     
     
     double p2 = -1 * M * lngammahalf + gammasum;
-    
-    
+        
     return p1 + p2;
 }
 
