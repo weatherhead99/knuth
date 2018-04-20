@@ -45,6 +45,8 @@ namespace knuth{
         
         void iterate(int n_MCMC_trials);
         
+        void iterator_test();
+        
         std::vector<std::pair<int,double>> get_current_points() const;
         
     private:

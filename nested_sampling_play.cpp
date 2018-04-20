@@ -31,10 +31,25 @@ int main(int, char**)
     auto pts_before = opt.get_current_points();
     
     
-    opt.iterate(100);
+    for(int i= 0; i < 100; i++)
+    {
+        opt.iterate(100);
+    }
+    
     
     auto pts_after = opt.get_current_points();
+    
+    int n_diff = 0;
     auto pbit = pts_before.begin();
+    for(auto& v : pts_after)
+    {
+        if(v != *(pbit++))
+        {
+            n_diff++;
+        }
+    }
+    
+    pbit = pts_before.begin();
     for(auto& v : pts_after)
     {
      std::cout << v.first << " : " << v.second  << " --- " << pbit->first << " : " << pbit->second <<  std::endl;   
@@ -42,6 +57,6 @@ int main(int, char**)
     }
     std::cout << "---------------------------" << std::endl;
     
-    
+    std::cout << "ndiff: " << n_diff << std::endl;
 
 };

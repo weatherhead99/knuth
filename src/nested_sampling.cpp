@@ -109,6 +109,9 @@ void knuth::NestedSamplingOptbins::trim_stored_calcs()
 {
     while(stored_calcs.size() > history_limit_)
     {
+        
+        
+        
         stored_calcs.erase(find_worst(stored_calcs));
     };
     
@@ -193,6 +196,20 @@ void knuth::NestedSamplingOptbins::iterate(int n_MCMC_trials)
 //     trim_stored_calcs();
     
 }
+
+void knuth::NestedSamplingOptbins::iterator_test()
+{
+    auto worst = find_worst(selected_points);
+    
+    auto w2 = find_worst(stored_calcs);
+    auto pt = select_random(stored_calcs,generator_, w2);
+    
+    auto newpt = MCMCMove(worst);
+    
+    *worst = newpt;
+    
+}
+
 
 
 std::vector<std::pair<int, double> > knuth::NestedSamplingOptbins::get_current_points() const
