@@ -22,7 +22,7 @@ int main(int, char**)
     }
 
     
-    knuth::NestedSamplingOptbins opt(samples, 20, 50, 75);
+    knuth::NestedSamplingOptbins opt(samples, 10000, 50, 75);
 
     cout << "init samples..." << endl;
     opt.init_samples_uniform();

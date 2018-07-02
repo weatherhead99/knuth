@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include <gsl_histogram.hh>
+#include <gsl_error.hh>
 #include <optbins.hh>
 
 using std::cout;
@@ -9,9 +10,11 @@ using std::endl;
 
 int main(int, char**)
 {
-    gsl::Histogram hist(10, 0, 50);
+    gsl::install_error_handler(true);
     
-    hist.accumulate(10.2);
+    gsl::Histogram hist(-50, 0, 50);
+    
+    hist.accumulate(10.5);
     hist.accumulate(30);
     
     cout << "sum: " << hist.sum() << endl;
