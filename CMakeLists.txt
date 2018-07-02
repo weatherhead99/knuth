@@ -2,7 +2,18 @@ project(knuth)
 cmake_minimum_required(VERSION 3.2)
 set(CMAKE_CXX_STANDARD 11)
 
+option(BUILD_PYTHON_BINDINGS "build pybind11 python bindings (requires pybind11)" OFF)
+if(EXISTS ${CMAKE_BINARY_DIR}/conan_paths.cmake)
+    message(WARNING "found conan_paths.cmake, doing Conan build")
+    include(${CMAKE_BINARY_DIR}/conan_paths.cmake)
+endif()
+
 find_package(GSL REQUIRED)
+
+if(BUILD_PYTHON_BINDINGS)
+find_package(pybind11 REQUIRED)
+endif()
+
 
 add_library(knuth src/gsl_histogram.cpp src/gsl_error.cpp src/optbins.cpp src/hist_utils.cpp src/nested_sampling.cpp)
 target_include_directories(knuth PUBLIC src)
@@ -16,3 +27,6 @@ target_link_libraries(optbins_examples PRIVATE knuth)
 
 add_executable(nested_sampling_play nested_sampling_play.cpp)
 target_link_libraries(nested_sampling_play PRIVATE knuth)
+
+add_executable(nested_sample_data nested_sample_data.cpp)
+target_link_libraries(nested_sample_data PRIVATE knuth)
