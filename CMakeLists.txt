@@ -12,12 +12,18 @@ find_package(GSL REQUIRED)
 
 if(BUILD_PYTHON_BINDINGS)
 find_package(pybind11 REQUIRED)
+message(STATUS "found pybind11 v${pybind11_VERSION} : ${pybind11_INCLUDE_DIRS}")
+add_subdirectory(python)
 endif()
-
+    
 
 add_library(knuth src/gsl_histogram.cpp src/gsl_error.cpp src/optbins.cpp src/hist_utils.cpp src/nested_sampling.cpp)
 target_include_directories(knuth PUBLIC src)
 target_link_libraries(knuth PUBLIC ${GSL_LIBRARIES})
+
+if(BUILD_PYTHON_BINDINGS)
+    set_target_properties(knuth PROPERTIES POSITION_INDEPENDENT_CODE ON)
+endif()
 
 add_executable(hist_iterator_dev hist_iterator_dev.cpp)
 target_link_libraries(hist_iterator_dev PRIVATE knuth)
