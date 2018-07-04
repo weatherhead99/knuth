@@ -48,6 +48,7 @@ namespace knuth{
         void iterator_test();
         
         std::vector<std::pair<int,double>> get_current_points() const;
+        const optvec& view_current_points() const;
         
     private:
         //TODO: allow this to be supplied

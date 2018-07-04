@@ -226,4 +226,8 @@ std::vector<std::pair<int, double> > knuth::NestedSamplingOptbins::get_current_p
 }
 
 
+const knuth::optvec & knuth::NestedSamplingOptbins::view_current_points() const
+{
+    return selected_points;
+}
 
