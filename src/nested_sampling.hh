@@ -55,7 +55,7 @@ namespace knuth{
         std::default_random_engine generator_;
         std::binomial_distribution<int> binomial_dist_;
         std::uniform_int_distribution<int> plus_minus_dist_;
-        const std::vector<double>& data_;
+        std::vector<double> data_;
         optmap stored_calcs;
         optvec selected_points;
         double data_min_;
